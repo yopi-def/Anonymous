@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Pesan Anonim</title>
+    
+    <!-- Tailwind CSS + DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Day.js untuk format waktu -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/utc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/timezone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/relativeTime.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/locale/id.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* Animated Gradient Background */
+        body {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #1e293b);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            min-height: 100vh;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Media preview */
+        .media-preview img,
+        .media-preview video {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        /* Badge animation */
+        .badge-animated {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Empty state */
+        .empty-state {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-6">
+    
+    <!-- Header -->
+    <div class="glass rounded-2xl p-6 mb-6 shadow-xl">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            
+            <!-- Title -->
+            <div>
+                <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+                    <i data-lucide="layout-dashboard" class="w-8 h-8"></i>
+                    Admin Dashboard
+                </h1>
+                <p class="text-white text-opacity-70 mt-1">
+                    Kelola pesan anonim yang masuk
+                </p>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-2 flex-wrap">
+                <button 
+                    onclick="loadMessages()"
+                    class="btn btn-sm bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-none"
+                >
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    Refresh
+                </button>
+                <button 
+                    onclick="logout()"
+                    class="btn btn-sm bg-red-500 bg-opacity-80 hover:bg-opacity-100 text-white border-none"
+                >
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    Logout
+                </button>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" id="statsContainer">
+        
+        <!-- Total Messages -->
+        <div class="glass-card rounded-xl p-5 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-white text-opacity-70 text-sm">Total Pesan</p>
+                    <h3 class="text-2xl font-bold text-white" id="totalMessages">0</h3>
+                </div>
+                <div class="bg-blue-500 bg-opacity-30 p-3 rounded-lg">
+                    <i data-lucide="message-square" class="w-6 h-6 text-blue-300"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- With Media -->
+        <div class="glass-card rounded-xl p-5 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-white text-opacity-70 text-sm">Dengan Media</p>
+                    <h3 class="text-2xl font-bold text-white" id="withMedia">0</h3>
+                </div>
+                <div class="bg-purple-500 bg-opacity-30 p-3 rounded-lg">
+                    <i data-lucide="image" class="w-6 h-6 text-purple-300"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Text Only -->
+        <div class="glass-card rounded-xl p-5 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-white text-opacity-70 text-sm">Hanya Teks</p>
+                    <h3 class="text-2xl font-bold text-white" id="textOnly">0</h3>
+                </div>
+                <div class="bg-green-500 bg-opacity-30 p-3 rounded-lg">
+                    <i data-lucide="file-text" class="w-6 h-6 text-green-300"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Total Files -->
+        <div class="glass-card rounded-xl p-5 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-white text-opacity-70 text-sm">Total File</p>
+                    <h3 class="text-2xl font-bold text-white" id="totalFiles">0</h3>
+                </div>
+                <div class="bg-orange-500 bg-opacity-30 p-3 rounded-lg">
+                    <i data-lucide="paperclip" class="w-6 h-6 text-orange-300"></i>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- Filter Tabs -->
+    <div class="glass rounded-xl p-4 mb-6 shadow-lg">
+        <div class="flex flex-wrap gap-2">
+            <button 
+                onclick="filterMessages('all')"
+                class="filter-btn btn btn-sm bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-none active"
+                data-filter="all"
+            >
+                <i data-lucide="list" class="w-4 h-4"></i>
+                Semua
+            </button>
+            <button 
+                onclick="filterMessages('image')"
+                class="filter-btn btn btn-sm bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-none"
+                data-filter="image"
+            >
+                <i data-lucide="image" class="w-4 h-4"></i>
+                Foto
+            </button>
+            <button 
+                onclick="filterMessages('video')"
+                class="filter-btn btn btn-sm bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-none"
+                data-filter="video"
+            >
+                <i data-lucide="video" class="w-4 h-4"></i>
+                Video
+            </button>
+            <button 
+                onclick="filterMessages('other')"
+                class="filter-btn btn btn-sm bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-none"
+                data-filter="other"
+            >
+                <i data-lucide="file" class="w-4 h-4"></i>
+                Dokumen
+            </button>
+        </div>
+    </div>
+    
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center py-20">
+        <div class="spinner mx-auto mb-4"></div>
+        <p class="text-white text-opacity-70">Memuat data...</p>
+    </div>
+    
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-20 empty-state">
+        <i data-lucide="inbox" class="w-20 h-20 text-white text-opacity-50 mx-auto mb-4"></i>
+        <h3 class="text-2xl font-bold text-white mb-2">Belum Ada Pesan</h3>
+        <p class="text-white text-opacity-70">
+            Tidak ada pesan untuk kategori ini
+        </p>
+    </div>
+    
+    <!-- Messages Container -->
+    <div id="messagesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+        <!-- Messages will be inserted here -->
+    </div>
+    
+    <script>
+        // Initialize Day.js
+        dayjs.extend(dayjs_plugin_utc);
+        dayjs.extend(dayjs_plugin_timezone);
+        dayjs.extend(dayjs_plugin_relativeTime);
+        dayjs.locale('id');
+        
+        // Initialize Lucide Icons
+        lucide.createIcons();
+        
+        // State
+        let allMessages = [];
+        let currentFilter = 'all';
+        let adminPassword = '';
+        
+        // Check authentication
+        function checkAuth() {
+            adminPassword = sessionStorage.getItem('adminPassword');
+            if (!adminPassword) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Tidak Terautentikasi',
+                    text: 'Silakan login terlebih dahulu.',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = '/yopi';
+                });
+                return false;
+            }
+            return true;
+        }
+        
+        // Load messages from API
+        async function loadMessages() {
+            if (!checkAuth()) return;
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`/api/messages?category=all&limit=200&password=${encodeURIComponent(adminPassword)}`);
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Gagal memuat data');
+                }
+                
+                allMessages = result.data || [];
+                updateStats();
+                filterMessages(currentFilter);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                if (error.message.includes('Unauthorized') || error.message.includes('401')) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Session Expired',
+                        text: 'Silakan login kembali.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        logout();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Gagal memuat data: ' + error.message,
+                        confirmButtonText: 'OK'
+                    });
+                }
+                
+                showEmpty();
+            }
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const total = allMessages.length;
+            const withMedia = allMessages.filter(m => m.hasMedia).length;
+            const textOnly = total - withMedia;
+            const totalFilesCount = allMessages.reduce((sum, m) => sum + (m.filesCount || 0), 0);
+            
+            document.getElementById('totalMessages').textContent = total;
+            document.getElementById('withMedia').textContent = withMedia;
+            document.getElementById('textOnly').textContent = textOnly;
+            document.getElementById('totalFiles').textContent = totalFilesCount;
+        }
+        
+        // Filter messages
+        function filterMessages(category) {
+            currentFilter = category;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === category) {
+                    btn.classList.add('active', 'bg-white', 'bg-opacity-40');
+                } else {
+                    btn.classList.remove('active', 'bg-white', 'bg-opacity-40');
+                }
+            });
+            
+            // Filter data
+            let filtered = allMessages;
+            
+            if (category !== 'all') {
+                filtered = allMessages.filter(msg => {
+                    if (!msg.files || msg.files.length === 0) return false;
+                    return msg.files.some(file => file.category === category);
+                });
+            }
+            
+            // Render messages
+            renderMessages(filtered);
+        }
+        
+        // Render messages to DOM
+        function renderMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            
+            if (messages.length === 0) {
+                showEmpty();
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            messages.forEach(msg => {
+                const card = createMessageCard(msg);
+                container.appendChild(card);
+            });
+            
+            showMessages();
+            lucide.createIcons();
+        }
+        
+        // Create message card element
+        function createMessageCard(msg) {
+            const card = document.createElement('div');
+            card.className = 'glass-card rounded-xl p-5 shadow-lg';
+            
+            // Format timestamp
+            const timestamp = dayjs(msg.timestamp || msg.createdAt).tz('Asia/Jakarta');
+            const timeAgo = timestamp.fromNow();
+            const fullTime = timestamp.format('DD MMMM YYYY, HH:mm') + ' WIB';
+            
+            // Build HTML
+            let html = `
+                <!-- Message Text -->
+                <div class="mb-4">
+                    <p class="text-white text-opacity-90 whitespace-pre-wrap break-words">
+                        ${escapeHtml(msg.text)}
+                    </p>
+                </div>
+            `;
+            
+            // Add media if exists
+            if (msg.files && msg.files.length > 0) {
+                html += '<div class="mb-4 space-y-3">';
+                
+                msg.files.forEach(file => {
+                    if (file.category === 'image') {
+                        // Image
+                        html += `
+                            <div class="media-preview">
+                                <img src="${file.url}" alt="${file.filename}" class="cursor-pointer" onclick="openMedia('${file.url}', 'image')">
+                            </div>
+                        `;
+                    } else if (file.category === 'video') {
+                        // Video
+                        html += `
+                            <div class="media-preview">
+                                <video controls class="cursor-pointer">
+                                    <source src="${file.url}" type="${file.mimetype}">
+                                    Browser Anda tidak mendukung video.
+                                </video>
+                            </div>
+                        `;
+                    } else {
+                        // Other files (documents, etc)
+                        html += `
+                            <a href="${file.url}" target="_blank" class="flex items-center gap-3 p-3 glass rounded-lg hover:bg-white hover:bg-opacity-10 transition-all">
+                                <i data-lucide="file" class="w-5 h-5 text-white flex-shrink-0"></i>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-white text-sm truncate">${file.filename}</p>
+                                    <p class="text-white text-opacity-60 text-xs">${file.sizeFormatted || ''}</p>
+                                </div>
+                                <i data-lucide="external-link" class="w-4 h-4 text-white text-opacity-60 flex-shrink-0"></i>
+                            </a>
+                        `;
+                    }
+                });
+                
+                html += '</div>';
+            }
+            
+            // Footer with timestamp and actions
+            html += `
+                <div class="flex justify-between items-center pt-4 border-t border-white border-opacity-10">
+                    <div class="text-white text-opacity-60 text-sm">
+                        <i data-lucide="clock" class="w-4 h-4 inline"></i>
+                        <span title="${fullTime}">${timeAgo}</span>
+                    </div>
+                    <button 
+                        onclick="deleteMessage('${msg.id}')"
+                        class="btn btn-xs bg-red-500 bg-opacity-70 hover:bg-opacity-100 text-white border-none"
+                    >
+                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                        Hapus
+                    </button>
+                </div>
+            `;
+            
+            card.innerHTML = html;
+            return card;
+        }
+        
+        // Open media in modal
+        function openMedia(url, type) {
+            if (type === 'image') {
+                Swal.fire({
+                    imageUrl: url,
+                    imageAlt: 'Media',
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    width: '80%',
+                    background: 'rgba(0, 0, 0, 0.9)',
+                    backdrop: 'rgba(0, 0, 0, 0.8)'
+                });
+            }
+        }
+        
+        // Delete message
+        async function deleteMessage(id) {
+            const result = await Swal.fire({
+                title: 'Hapus Pesan?',
+                text: 'Pesan yang dihapus tidak dapat dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280'
+            });
+            
+            if (!result.isConfirmed) return;
+            
+            try {
+                const response = await fetch(`/api/messages/${id}?password=${encodeURIComponent(adminPassword)}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Gagal menghapus');
+                }
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Pesan berhasil dihapus.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
+                // Reload messages
+                loadMessages();
+                
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Gagal menghapus pesan: ' + error.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+        
+        // Logout
+        function logout() {
+            sessionStorage.removeItem('adminPassword');
+            window.location.href = '/yopi';
+        }
+        
+        // UI State Functions
+        function showLoading() {
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('messagesContainer').classList.add('hidden');
+        }
+        
+        function showEmpty() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('messagesContainer').classList.add('hidden');
+        }
+        
+        function showMessages() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('messagesContainer').classList.remove('hidden');
+        }
+        
+        // Utility: Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Initialize
+        if (checkAuth()) {
+            loadMessages();
+        }
+        
+        // Auto refresh every 30 seconds
+        setInterval(() => {
+            if (checkAuth()) {
+                loadMessages();
+            }
+        }, 30000);
+    </script>
+    
+</body>
+</html>

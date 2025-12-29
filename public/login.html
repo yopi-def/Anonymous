@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Pesan Anonim</title>
+    
+    <!-- Tailwind CSS + DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* Animated Gradient Background */
+        body {
+            background: linear-gradient(-45deg, #1e3a8a, #312e81, #4c1d95, #581c87);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Floating animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Button hover effect */
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Input focus effect */
+        input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    
+    <div class="w-full max-w-md">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-block glass-strong rounded-full p-4 mb-4 float">
+                <i data-lucide="shield" class="w-12 h-12 text-white"></i>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">
+                Admin Login
+            </h1>
+            <p class="text-white text-opacity-80">
+                Masuk untuk mengakses dashboard
+            </p>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="glass-strong rounded-2xl p-8 shadow-2xl">
+            
+            <form id="loginForm">
+                
+                <!-- Password Input -->
+                <div class="mb-6">
+                    <label class="block text-white font-semibold mb-2 flex items-center gap-2">
+                        <i data-lucide="lock" class="w-5 h-5"></i>
+                        Password Admin
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="passwordInput"
+                            class="w-full bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-60 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all"
+                            placeholder="Masukkan password"
+                            required
+                        >
+                        <button 
+                            type="button"
+                            id="togglePassword"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-opacity-70 hover:text-opacity-100 transition-all"
+                        >
+                            <i data-lucide="eye" id="eyeIcon" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button 
+                    type="submit"
+                    id="loginBtn"
+                    class="w-full bg-white text-purple-900 font-bold py-3 rounded-lg hover:bg-opacity-90 transition-all btn-custom flex items-center justify-center gap-2"
+                >
+                    <i data-lucide="log-in" class="w-5 h-5"></i>
+                    Masuk
+                </button>
+                
+                <!-- Back to Home -->
+                <a 
+                    href="/"
+                    class="block text-center text-white text-opacity-80 hover:text-opacity-100 mt-4 transition-all"
+                >
+                    <i data-lucide="arrow-left" class="w-4 h-4 inline"></i>
+                    Kembali ke Halaman Utama
+                </a>
+                
+            </form>
+            
+        </div>
+        
+        <!-- Footer Info -->
+        <div class="text-center mt-6 text-white text-opacity-60 text-sm">
+            <p>
+                <i data-lucide="info" class="w-4 h-4 inline"></i>
+                Hanya admin yang memiliki akses
+            </p>
+        </div>
+        
+    </div>
+    
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+        
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+        
+        // Toggle password visibility
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            
+            // Change icon
+            eyeIcon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
+            lucide.createIcons();
+        });
+        
+        // Handle form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const password = passwordInput.value;
+            
+            if (!password) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Password Kosong',
+                    text: 'Silakan masukkan password admin.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            // Disable button
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading loading-spinner"></span> Memverifikasi...';
+            
+            try {
+                // Verify password by trying to access protected endpoint
+                const response = await fetch('/api/messages?limit=1&password=' + encodeURIComponent(password));
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Save password to sessionStorage
+                    sessionStorage.setItem('adminPassword', password);
+                    
+                    // Show success message
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Login Berhasil!',
+                        text: 'Mengalihkan ke dashboard...',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    
+                    // Redirect to dashboard
+                    window.location.href = '/yopi/dashboard';
+                    
+                } else {
+                    throw new Error('Password salah');
+                }
+                
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Gagal',
+                    text: 'Password admin salah!',
+                    confirmButtonText: 'Coba Lagi'
+                });
+                
+                // Reset button
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i data-lucide="log-in" class="w-5 h-5"></i> Masuk';
+                lucide.createIcons();
+                
+                // Clear password input
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+        
+        // Auto-focus on password input
+        passwordInput.focus();
+    </script>
+    
+</body>
+</html>
