@@ -1,0 +1,157 @@
+╔════════════════════════════════════════════════════════════╗
+║          PESAN ANONIM - PROJECT STRUCTURE                 ║
+╚════════════════════════════════════════════════════════════╝
+
+📁 STRUKTUR FILE:
+
+pesan-anonim/
+│
+├── 📄 app.js                    → Backend utama (Express server)
+├── 📄 package.json              → Dependencies & npm scripts
+├── 📄 .env.example              → Template environment variables
+├── 📄 .gitignore                → Git ignore rules
+│
+├── 📚 DOKUMENTASI:
+│   ├── README.md                → Dokumentasi utama (English)
+│   ├── TUTORIAL_ID.md           → Tutorial lengkap (Bahasa Indonesia)
+│   ├── PTERODACTYL_SETUP.md     → Panduan deploy Pterodactyl
+│   ├── QUICK_START.md           → Quick start guide
+│   └── LICENSE                  → MIT License
+│
+└── 📁 public/                   → Frontend files
+    ├── index.html               → Homepage (kirim pesan)
+    ├── login.html               → Admin login page
+    └── admin.html               → Admin dashboard
+
+═══════════════════════════════════════════════════════════
+
+🔧 TEKNOLOGI YANG DIGUNAKAN:
+
+Backend:
+  • Node.js + Express.js (CommonJS)
+  • Firebase Firestore (Database)
+  • GitHub API (File Storage)
+  • Multer (File Upload - Memory Storage)
+  • Express Rate Limit (Rate limiting)
+  • Helmet (Security headers)
+  • CORS (Cross-origin)
+
+Frontend:
+  • Tailwind CSS (Styling)
+  • DaisyUI (UI Components)
+  • Lucide Icons (Icons)
+  • SweetAlert2 (Notifications)
+  • AOS (Animations)
+  • Day.js (Date/time formatting)
+
+═══════════════════════════════════════════════════════════
+
+📋 FITUR UTAMA:
+
+User (Public):
+  ✓ Kirim pesan anonim
+  ✓ Upload file (gambar, video, dokumen)
+  ✓ Max 4 files per submission
+  ✓ Max 20MB per file
+  ✓ Rate limit 5 pesan/jam
+  ✓ Client-side limit 5 pesan/hari
+  ✓ UI Glassmorphism modern
+
+Admin (Protected):
+  ✓ Dashboard dengan statistik
+  ✓ Filter by kategori (image/video/other)
+  ✓ Preview media langsung
+  ✓ Hapus pesan
+  ✓ Timestamp WIB
+  ✓ Auto-refresh
+
+═══════════════════════════════════════════════════════════
+
+⚙️ ENVIRONMENT VARIABLES:
+
+PORT                            → Server port
+GITHUB_TOKEN                    → GitHub personal access token
+GITHUB_REPO                     → Repository (format: user/repo)
+GITHUB_BRANCH                   → Branch name (default: main)
+FIREBASE_SERVICE_ACCOUNT_JSON   → Firebase credentials (satu baris!)
+ADMIN_PASSWORD                  → Password admin dashboard
+
+═══════════════════════════════════════════════════════════
+
+🚀 CARA MENJALANKAN:
+
+1. Install dependencies:
+   npm install
+
+2. Setup environment:
+   cp .env.example .env
+   (Edit .env dengan data Anda)
+
+3. Run server:
+   npm start
+
+4. Akses aplikasi:
+   http://localhost:3000
+
+═══════════════════════════════════════════════════════════
+
+📡 API ENDPOINTS:
+
+Public:
+  GET  /                    → Homepage
+  POST /api/send            → Kirim pesan (rate limited)
+  GET  /api/health          → Health check
+
+Admin (require password):
+  GET  /yopi                → Login page
+  GET  /yopi/dashboard      → Dashboard
+  GET  /api/messages        → Get all messages
+  DELETE /api/messages/:id  → Delete message
+  GET  /api/stats           → Statistics
+
+═══════════════════════════════════════════════════════════
+
+📚 DOKUMENTASI:
+
+• Lihat README.md untuk dokumentasi lengkap
+• Lihat TUTORIAL_ID.md untuk tutorial step-by-step
+• Lihat PTERODACTYL_SETUP.md untuk deploy guide
+• Lihat QUICK_START.md untuk setup cepat
+
+═══════════════════════════════════════════════════════════
+
+🔒 KEAMANAN:
+
+✓ Rate limiting (5 pesan/jam per IP)
+✓ File size validation (max 20MB)
+✓ File type validation
+✓ Admin password protection
+✓ Helmet security headers
+✓ CORS protection
+✓ Input sanitization
+✓ No persistent disk storage (memory only)
+
+═══════════════════════════════════════════════════════════
+
+💡 TIPS:
+
+• Gunakan private repository untuk storage
+• Backup Firebase data secara berkala
+• Monitor GitHub API rate limits
+• Gunakan HTTPS untuk production
+• Setup SSL certificate
+• Monitor server resources
+
+═══════════════════════════════════════════════════════════
+
+📞 SUPPORT:
+
+Jika ada masalah:
+  1. Cek console untuk error messages
+  2. Lihat troubleshooting di README.md
+  3. Cek environment variables
+  4. Verifikasi GitHub & Firebase setup
+
+═══════════════════════════════════════════════════════════
+
+Made with ❤️ | Open Source | MIT License

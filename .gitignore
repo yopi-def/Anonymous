@@ -1,0 +1,100 @@
+# ====================================
+# Node.js & NPM
+# ====================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ====================================
+# Environment Variables (SENSITIVE!)
+# ====================================
+.env
+.env.local
+.env.production
+.env.development
+*.env
+
+# ====================================
+# Firebase Service Account (SENSITIVE!)
+# ====================================
+serviceAccount.json
+firebase-adminsdk-*.json
+*-firebase-adminsdk-*.json
+
+# ====================================
+# IDE & Editor Files
+# ====================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ====================================
+# Logs
+# ====================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ====================================
+# Testing & Coverage
+# ====================================
+coverage/
+.nyc_output/
+*.lcov
+
+# ====================================
+# Build & Temporary Files
+# ====================================
+dist/
+build/
+.cache/
+.tmp/
+temp/
+*.tmp
+
+# ====================================
+# OS Files
+# ====================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ====================================
+# Backup Files
+# ====================================
+*.bak
+*.backup
+*~
+
+# ====================================
+# Security & Credentials
+# ====================================
+*.key
+*.pem
+*.p12
+credentials.json
+secrets.json
+config.json
+
+# ====================================
+# IMPORTANT NOTES:
+# ====================================
+# 1. NEVER commit .env file to Git!
+# 2. NEVER commit Firebase service account JSON!
+# 3. Always use .env.example as template
+# 4. Add sensitive files to this .gitignore
+# ====================================
